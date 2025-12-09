@@ -1,0 +1,15 @@
+    {% extends 'base.html' %}
+    {% load static %}
+    {% load crispy_forms_tags %}
+    {% block content %}
+<link rel="stylesheet" href="{% static 'css/base.css' %}">
+<h1>Добавление категории расхода</h1>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit">Добавить</button>
+    <button><a href="/incomes/category">Отмена</a></button>
+</form>
+
+ {% endblock %}

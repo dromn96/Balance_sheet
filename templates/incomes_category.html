@@ -1,0 +1,14 @@
+    {% extends 'base.html' %}
+    {% load static %}
+    {% block content %}
+<link rel="stylesheet" href="{% static 'css/base.css' %}">
+<h1>Категории доходов</h1>
+<button><a href="/incomes/category/add" class="nav-link px-2">Добавить категорию дохода</a></button>
+<!--<button><a href="/incomes/category/delete" class="nav-link px-2">Удалить категорию дохода</a></button>-->
+{% for category in income_category_list %}
+    <ul class="nav col-12 col-md-auto mt-2 justify-content-left mb-md-0">
+<li><a href="/incomes?category={{category.category_place_on_the_list}}">{{ category.category_name }}</a></li>
+    </ul>
+{% endfor %}
+
+    {% endblock %}

@@ -1,0 +1,110 @@
+    {% extends 'base.html' %}
+    {% load static %}
+    {% block content %}
+<link rel="stylesheet" href="{% static 'css/filter-form.css' %}">
+<link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <h2>Сводная таблица</h2>
+  <div class="filter">
+    <label>Фильтр по годам</label>
+     <form>
+    <select name="year">
+        <option value=""  {% if not selected_year %} selected {% endif %}>Выберите год</option>
+        {% for year in year_list %}
+        <option {% if year == selected_year %} selected {% endif %} value="{{ year }}">{{ year }}</option>
+        {% endfor %}
+    </select>
+    <button>Отфильтровать</button>
+    </form>
+  </div>
+    <h2>Расходы</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Категория</th>
+      <th scope="col">Среднее план</th>
+      <th scope="col">Итого</th>
+        {% for month in month_list %}
+      <th scope="col">{{ month.month_name }}</th>
+        {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for category_name, data in expenses_by_category.items %}
+    <tr>
+      <td>{{ category_name }}</td>
+      <td>{{ data.average}}</td>
+      <td>{{ data.total }}</td>
+
+      <td scope="row">{{ data.months.1 }}</td>
+      <td scope="row">{{ data.months.2 }}</td>
+      <td scope="row">{{ data.months.3 }}</td>
+      <td scope="row">{{ data.months.4 }}</td>
+      <td scope="row">{{ data.months.5 }}</td>
+      <td scope="row">{{ data.months.6 }}</td>
+      <td scope="row">{{ data.months.7 }}</td>
+      <td scope="row">{{ data.months.8 }}</td>
+      <td scope="row">{{ data.months.9 }}</td>
+      <td scope="row">{{ data.months.10 }}</td>
+      <td scope="row">{{ data.months.11 }}</td>
+      <td scope="row">{{ data.months.12 }}</td>
+
+
+    </tr>
+    {% endfor %}
+    <tr>
+      <td><b>Итого</b></td>
+      <td><b>{{ average_expenses }}</b></td>
+      <td><b>{{ total_expenses }}</b></td>
+          {% for month, total in monthly_expenses.items %}
+      <td><b>{{ total }}</b></td>
+    {% endfor %}
+  </tr>
+  </tbody>
+</table>
+
+ <h2>Доходы</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Категория</th>
+      <th scope="col">Среднее план</th>
+      <th scope="col">Итого</th>
+        {% for month in month_list %}
+      <th scope="col">{{ month.month_name }}</th>
+        {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for category_name, data in incomes_by_category.items %}
+    <tr>
+      <td>{{ category_name }}</td>
+      <td>{{ data.average}}</td>
+      <td>{{ data.total }}</td>
+
+      <td scope="row">{{ data.months.1 }}</td>
+      <td scope="row">{{ data.months.2 }}</td>
+      <td scope="row">{{ data.months.3 }}</td>
+      <td scope="row">{{ data.months.4 }}</td>
+      <td scope="row">{{ data.months.5 }}</td>
+      <td scope="row">{{ data.months.6 }}</td>
+      <td scope="row">{{ data.months.7 }}</td>
+      <td scope="row">{{ data.months.8 }}</td>
+      <td scope="row">{{ data.months.9 }}</td>
+      <td scope="row">{{ data.months.10 }}</td>
+      <td scope="row">{{ data.months.11 }}</td>
+      <td scope="row">{{ data.months.12 }}</td>
+
+
+    </tr>
+    {% endfor %}
+      <tr>
+      <td><b>Итого</b></td>
+      <td><b>{{ average_incomes }}</b></td>
+      <td><b>{{ total_incomes }}</b></td>
+          {% for month, total in monthly_incomes.items %}
+      <td class="bold_cell"><b>{{ total }}</b></td>
+    {% endfor %}
+  </tr>
+  </tbody>
+</table>
+    {% endblock %}

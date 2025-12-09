@@ -1,0 +1,61 @@
+{% load static %}
+<!doctype html>
+<html lang="en" class="h-100">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Balance</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.4/css/dataTables.dataTables.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css">
+</head>
+<body class="d-flex flex-column h-100">
+
+    <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+
+    <ul class="nav col-12 col-md-auto mb-2 justify-content-left mb-md-0">
+    <li><a href="/" class="nav-link px-2">Главная</a></li>
+        {% if request.user.is_authenticated %}
+    <li><a href="/incomes" class="nav-link px-2">Доходы</a></li>
+    <li><a href="/expenses" class="nav-link px-2">Расходы</a></li>
+    <li><a href="/huge_expenses" class="nav-link px-2">Крупные траты</a></li>
+    <li><a href="/expenses/category" class="nav-link px-2">Категории расходов</a></li>
+    <li><a href="/incomes/category" class="nav-link px-2">Категории доходов</a></li>
+    {% if request.user.is_staff %}
+        <li><a href="/admin" class="nav-link px-2">Админ</a></li>
+        {% endif %}
+        </ul>
+    <ul class="nav col-12 col-md-auto mb-2 justify-content-right mb-md-0">
+    <li class="nav-item">{{request.user.username}}</li>
+        <li class="nav-item"><a href="{% url 'logout' %}" class="nav-link">Выйти</a></li>
+        {% else %}
+        <li class="nav-item"><a href="{% url 'login' %}" class="nav-link">Войти</a></li>
+        {% endif %}
+    </ul>
+    </header>
+    <main class="container-fluid">
+      <div class="container py-4">
+    {% block content %}
+     {% endblock %}
+      </div>
+    </main>
+<footer class="py-3 my-4">
+    <div class="container text-center text-muted border-top pt-3 mt-3">
+<!--    <ul class="nav justify-content-center border-bottom pb-3 mb-3">-->
+<!--        <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">Home</a></li>-->
+<!--        <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">Features</a></li>-->
+<!--        <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">Pricing</a></li>-->
+<!--        <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">FAQs</a></li>-->
+<!--        <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">About</a></li> </ul>-->
+    <p class="text-center text-body-secondary">© 2025 Gleb, Inc</p>
+    </div>
+</footer>
+
+<!--</div>-->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+<script src="{% static 'js/base.js' %}"></script>
+<script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+</body>
+</html>

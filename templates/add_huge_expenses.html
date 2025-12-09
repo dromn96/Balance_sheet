@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+    {% load crispy_forms_tags %}
+    {% block content %}
+
+<h1>Добавление крупной траты</h1>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit">Добавить</button>
+</form>
+
+ {% endblock %}

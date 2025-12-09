@@ -1,0 +1,68 @@
+    {% extends 'base.html' %}
+    {% load static %}
+    {% block content %}
+    <link rel="stylesheet" href="{% static 'css/filter-form.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <div id="token">{% csrf_token %}</div>
+<h1>Расходы</h1>
+<div class="filter">
+    <button><a href="/expenses/add" class="nav-link px-2">Добавить расход</a></button>
+    <label>Фильтр</label>
+        <form>
+        <select name="category">
+            <option value=""  {% if not selected_category_id %} selected {% endif %}>Все категории</option>
+            <!--                выводим категории из базы-->
+            {% for category in category_list %}
+            <option {% if category.id == category_id %} selected {% endif %} value="{{ category.category_place_on_the_list }}">{{ category.category_name }}</option>
+            {% endfor %}
+        </select>
+        <select name="month">
+            <option value=""  {% if not selected_month %} selected {% endif %}>Все месяцы</option>
+            <!--                выводим категории из базы-->
+            {% for month in month_list %}
+            <option {% if month.id == month_id %} selected {% endif %} value="{{ month.month_number }}">{{ month.month_name }}</option>
+            {% endfor %}
+        </select>
+        <select name="year">
+            <option value=""  {% if not selected_year %} selected {% endif %}>Выберите год</option>
+            {% for year in year_list %}
+            <option {% if year == selected_year %} selected {% endif %} value="{{ year }}">{{ year }}</option>
+            {% endfor %}
+        </select>
+        <button>Отфильтровать</button>
+        </form>
+    <button><a href="/expenses/export" class="nav-link px-2">Экспорт в Excel</a></button>
+</div>
+
+<table id='expensesTable' class="table">
+  <thead>
+    <tr>
+      <th></th>
+      <th scope="col">Описание траты</th>
+      <th scope="col">Категория</th>
+      <th scope="col">Стоимость</th>
+      <th scope="col">Месяц</th>
+      <th scope="col">Год</th>
+    </tr>
+  </thead>
+  <tbody>
+     {% for expense in expenses_list %}
+    <tr class="table-row" data-id="{{ expense.id }}">
+      <td style="position: relative;">
+        <div class="icons">
+          <img src="{% static 'icons/edit-pencil.png' %}" alt="Редактировать" class="icon-button edit-icon" title="Редактировать">
+          <img src="{% static 'icons/delete-trash.png' %}" alt="Удалить" class="icon-button delete-icon" title="Удалить">
+        </div>
+      </td>
+      <th scope="row">{{ expense.waste_name }}</th>
+      <td><a href="/expenses/{{ expense.id }}/edit">{{ expense.category_name }}</a></td>
+      <td>{{ expense.cash_expenses }} рублей</td>
+      <td>{{ expense.month_name }}</td>
+      <td>{{ expense.date_created|date:"Y" }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<script src="{% static 'js/expenses.js' %}"></script>
+
+    {% endblock %}
