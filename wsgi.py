@@ -1,0 +1,1 @@
+from balance_sheet.wsgi import application
