@@ -1,0 +1,25 @@
+html, body {
+height: 100%;
+overflow: hidden; /* чтобы скролл был только внутри контента */
+}
+main {
+overflow-y: auto;      /* внутренний скролл */
+flex: 1 1 auto;        /* заполняет пространство между шапкой и подвалом */
+}
+a {
+text-decoration: none;
+color: black;
+}
+
+button {
+    padding: 0.375rem 0.75rem;
+    border-radius: 10px;
+    background-color: white;
+    border: 1px solid black;
+    font-size: 1rem
+
+}
+button:hover {
+    cursor: pointer;
+    border: 2px solid blue;
+}

@@ -1,0 +1,31 @@
+.table-row {
+  position: relative;
+}
+
+.icons {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.table-row:hover .icons {
+  opacity: 1;
+}
+
+.icon-button {
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+}
+.filter {
+  display: flex;
+  align-items: center; /* вертикальное выравнивание по центру */
+  gap: 10px; /* расстояние между элементами по желанию */
+  padding-top: 5px;
+  padding-bottom: 15px;
+}
