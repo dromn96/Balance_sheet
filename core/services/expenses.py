@@ -41,9 +41,15 @@ def get_expenses_by_category(profile, year=2025):
         category_name = category.category_name
 
         if category_name not in data_by_category:
-            continue
+            data_by_category[category_name] = {
+                'months': {}, 'total': 0, 'average': 0}
 
-        data_by_category_ordered[category_name] = data_by_category[category_name]
+        data = data_by_category[category_name]
+        data['months'] = {
+            str(month): data['months'].get(str(month), 0)
+            for month in range(1, 13)
+        }
+        data_by_category_ordered[category_name] = data
 
         print(data_by_category_ordered)
 

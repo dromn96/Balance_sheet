@@ -1,5 +1,6 @@
     {% extends 'base.html' %}
     {% load static %}
+    {% block content_container_class %}container-fluid py-4{% endblock %}
     {% block content %}
 <link rel="stylesheet" href="{% static 'css/filter-form.css' %}">
 <link rel="stylesheet" href="{% static 'css/base.css' %}">
@@ -17,7 +18,7 @@
     </form>
   </div>
     <h2>Расходы</h2>
-<table class="table">
+<table class="table table-bordered summary-table w-100">
   <thead>
     <tr>
       <th scope="col">Категория</th>
@@ -32,38 +33,40 @@
     {% for category_name, data in expenses_by_category.items %}
     <tr>
       <td>{{ category_name }}</td>
-      <td>{{ data.average}}</td>
-      <td>{{ data.total }}</td>
+      <td data-order="{{ data.average }}"><b>{{ data.average }} ₽</b></td>
+      <td data-order="{{ data.total }}"><b>{{ data.total }} ₽</b></td>
 
-      <td scope="row">{{ data.months.1 }}</td>
-      <td scope="row">{{ data.months.2 }}</td>
-      <td scope="row">{{ data.months.3 }}</td>
-      <td scope="row">{{ data.months.4 }}</td>
-      <td scope="row">{{ data.months.5 }}</td>
-      <td scope="row">{{ data.months.6 }}</td>
-      <td scope="row">{{ data.months.7 }}</td>
-      <td scope="row">{{ data.months.8 }}</td>
-      <td scope="row">{{ data.months.9 }}</td>
-      <td scope="row">{{ data.months.10 }}</td>
-      <td scope="row">{{ data.months.11 }}</td>
-      <td scope="row">{{ data.months.12 }}</td>
+      <td scope="row" data-order="{{ data.months.1 }}">{{ data.months.1 }} ₽</td>
+      <td scope="row" data-order="{{ data.months.2 }}">{{ data.months.2 }} ₽</td>
+      <td scope="row" data-order="{{ data.months.3 }}">{{ data.months.3 }} ₽</td>
+      <td scope="row" data-order="{{ data.months.4 }}">{{ data.months.4 }} ₽</td>
+      <td scope="row" data-order="{{ data.months.5 }}">{{ data.months.5 }} ₽</td>
+      <td scope="row" data-order="{{ data.months.6 }}">{{ data.months.6 }} ₽</td>
+      <td scope="row" data-order="{{ data.months.7 }}">{{ data.months.7 }} ₽</td>
+      <td scope="row" data-order="{{ data.months.8 }}">{{ data.months.8 }} ₽</td>
+      <td scope="row" data-order="{{ data.months.9 }}">{{ data.months.9 }} ₽</td>
+      <td scope="row" data-order="{{ data.months.10 }}">{{ data.months.10 }} ₽</td>
+      <td scope="row" data-order="{{ data.months.11 }}">{{ data.months.11 }} ₽</td>
+      <td scope="row" data-order="{{ data.months.12 }}">{{ data.months.12 }} ₽</td>
 
 
     </tr>
     {% endfor %}
+  </tbody>
+  <tfoot>
     <tr>
       <td><b>Итого</b></td>
-      <td><b>{{ average_expenses }}</b></td>
-      <td><b>{{ total_expenses }}</b></td>
+        <td data-order="{{ average_expenses }}"><b>{{ average_expenses }} ₽</b></td>
+        <td data-order="{{ total_expenses }}"><b>{{ total_expenses }} ₽</b></td>
           {% for month, total in monthly_expenses.items %}
-      <td><b>{{ total }}</b></td>
+        <td data-order="{{ total }}"><b>{{ total }} ₽</b></td>
     {% endfor %}
   </tr>
-  </tbody>
+  </tfoot>
 </table>
 
  <h2>Доходы</h2>
-<table class="table">
+<table class="table table-bordered summary-table w-100">
   <thead>
     <tr>
       <th scope="col">Категория</th>
@@ -78,33 +81,35 @@
     {% for category_name, data in incomes_by_category.items %}
     <tr>
       <td>{{ category_name }}</td>
-      <td>{{ data.average}}</td>
-      <td>{{ data.total }}</td>
+      <td data-order="{{ data.average }}"><b>{{ data.average }} ₽</b></td>
+      <td data-order="{{ data.total }}"><b>{{ data.total }} ₽</b></td>
 
-      <td scope="row">{{ data.months.1 }}</td>
-      <td scope="row">{{ data.months.2 }}</td>
-      <td scope="row">{{ data.months.3 }}</td>
-      <td scope="row">{{ data.months.4 }}</td>
-      <td scope="row">{{ data.months.5 }}</td>
-      <td scope="row">{{ data.months.6 }}</td>
-      <td scope="row">{{ data.months.7 }}</td>
-      <td scope="row">{{ data.months.8 }}</td>
-      <td scope="row">{{ data.months.9 }}</td>
-      <td scope="row">{{ data.months.10 }}</td>
-      <td scope="row">{{ data.months.11 }}</td>
-      <td scope="row">{{ data.months.12 }}</td>
+      <td scope="row" data-order="{{ data.months.1 }}">{{ data.months.1 }} ₽</td>
+      <td scope="row" data-order="{{ data.months.2 }}">{{ data.months.2 }} ₽</td>
+      <td scope="row" data-order="{{ data.months.3 }}">{{ data.months.3 }} ₽</td>
+      <td scope="row" data-order="{{ data.months.4 }}">{{ data.months.4 }} ₽</td>
+      <td scope="row" data-order="{{ data.months.5 }}">{{ data.months.5 }} ₽</td>
+      <td scope="row" data-order="{{ data.months.6 }}">{{ data.months.6 }} ₽</td>
+      <td scope="row" data-order="{{ data.months.7 }}">{{ data.months.7 }} ₽</td>
+      <td scope="row" data-order="{{ data.months.8 }}">{{ data.months.8 }} ₽</td>
+      <td scope="row" data-order="{{ data.months.9 }}">{{ data.months.9 }} ₽</td>
+      <td scope="row" data-order="{{ data.months.10 }}">{{ data.months.10 }} ₽</td>
+      <td scope="row" data-order="{{ data.months.11 }}">{{ data.months.11 }} ₽</td>
+      <td scope="row" data-order="{{ data.months.12 }}">{{ data.months.12 }} ₽</td>
 
 
     </tr>
     {% endfor %}
+    </tbody>
+    <tfoot>
       <tr>
       <td><b>Итого</b></td>
-      <td><b>{{ average_incomes }}</b></td>
-      <td><b>{{ total_incomes }}</b></td>
+        <td data-order="{{ average_incomes }}"><b>{{ average_incomes }} ₽</b></td>
+        <td data-order="{{ total_incomes }}"><b>{{ total_incomes }} ₽</b></td>
           {% for month, total in monthly_incomes.items %}
-      <td class="bold_cell"><b>{{ total }}</b></td>
+        <td class="bold_cell" data-order="{{ total }}"><b>{{ total }} ₽</b></td>
     {% endfor %}
   </tr>
-  </tbody>
+    </tfoot>
 </table>
     {% endblock %}

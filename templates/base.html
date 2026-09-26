@@ -7,7 +7,6 @@
     <title>Balance</title>
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.4/css/dataTables.dataTables.css" />
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css">
 </head>
 <body class="d-flex flex-column h-100">
@@ -35,7 +34,7 @@
     </ul>
     </header>
     <main class="container-fluid">
-      <div class="container py-4">
+            <div class="{% block content_container_class %}container py-4{% endblock %}">
     {% block content %}
      {% endblock %}
       </div>

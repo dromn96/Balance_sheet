@@ -1,5 +1,6 @@
     {% extends 'base.html' %}
     {% load static %}
+    {% block content_container_class %}container-fluid py-4{% endblock %}
     {% block content %}
     <link rel="stylesheet" href="{% static 'css/filter-form.css' %}">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
@@ -32,7 +33,7 @@
         </form>
 </div>
 
-<table id='expensesTable' class="table">
+<table id='expensesTable' class="table table-bordered">
   <thead>
     <tr>
       <th scope="col">Описание траты</th>
@@ -47,7 +48,7 @@
     <tr>
       <th scope="row">{{ expense.waste_name }}</th>
       <td>{{ expense.category_name }}</td>
-      <td>{{ expense.Cash_expenses }}</td>
+      <td data-order="{{ expense.cash_expenses }}">{{ expense.cash_expenses }} ₽</td>
       <td>{{ expense.month_name }}</td>
       <td>{{ expense.date_created|date:"Y" }}</td>
     </tr>

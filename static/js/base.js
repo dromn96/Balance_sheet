@@ -14,8 +14,20 @@ $(document).ready(function() {
                     }
                     return data;
                 }
-            }
+            },
         ]
+    });
+
+    $('.summary-table').DataTable({
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.13.4/i18n/ru.json"
+        },
+        "paging": false,
+        "searching": false,
+        "info": false,
+        "order": [],
+        "autoWidth": false,
+        "scrollX": true
     });
 });
 

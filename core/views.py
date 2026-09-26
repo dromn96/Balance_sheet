@@ -16,8 +16,11 @@ from .services.incomes import get_incomes_by_category
 from .services.excel import export_expenses, export_incomes
 
 def main(request):
-    year_list = Expenses.objects.values_list(
-        'date_created__year', flat=True).distinct()
+    current_year = datetime.now().year
+    year_list = list(Expenses.objects.values_list(
+        'date_created__year', flat=True).distinct())
+    if current_year not in year_list:
+        year_list.append(current_year)
     if request.user.is_authenticated:
         profile = request.user.profile
     else:
@@ -27,7 +30,9 @@ def main(request):
     category_list = CategoryExpenses.objects.all()
     month_list = Months.objects.all()
 
-    year = request.GET.get('year', datetime.now().year)
+    year = int(request.GET.get('year') or current_year)
+    expense_list = expense_list.filter(date_created__year=year)
+    income_list = income_list.filter(date_created__year=year)
 
     if not request.user.is_authenticated:
         return redirect('users/login')

@@ -1,5 +1,6 @@
     {% extends 'base.html' %}
     {% load static %}
+    {% block content_container_class %}container-fluid py-4{% endblock %}
     {% block content %}
     <link rel="stylesheet" href="{% static 'css/filter-form.css' %}">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
@@ -34,7 +35,7 @@
     <button><a href="/expenses/export" class="nav-link px-2">Экспорт в Excel</a></button>
 </div>
 
-<table id='expensesTable' class="table">
+<table id='expensesTable' class="table table-bordered">
   <thead>
     <tr>
       <th></th>
@@ -56,7 +57,7 @@
       </td>
       <th scope="row">{{ expense.waste_name }}</th>
       <td><a href="/expenses/{{ expense.id }}/edit">{{ expense.category_name }}</a></td>
-      <td>{{ expense.cash_expenses }} рублей</td>
+      <td data-order="{{ expense.cash_expenses }}">{{ expense.cash_expenses }} ₽</td>
       <td>{{ expense.month_name }}</td>
       <td>{{ expense.date_created|date:"Y" }}</td>
     </tr>
