@@ -35,10 +35,13 @@
     <button><a href="/incomes/export" class="nav-link px-2">Экспорт в Excel</a></button>
 </div>
 
-<table id='expensesTable' class="table table-bordered">
+<table id='expensesTable' class="table table-bordered"
+       data-edit-base="/incomes/" data-delete-base="/incomes/"
+       data-edit-icon="{% static 'icons/edit-pencil.png' %}"
+       data-delete-icon="{% static 'icons/delete-trash.png' %}">
   <thead>
     <tr>
-      <th></th>
+      <th scope="col">Действие</th>
       <th scope="col">Описание дохода</th>
       <th scope="col">Категория</th>
       <th scope="col">Сумма дохода</th>
@@ -65,5 +68,4 @@
   </tbody>
 </table>
 <script src="{% static 'js/incomes.js' %}"></script>
-
     {% endblock %}
