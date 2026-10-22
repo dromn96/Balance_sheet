@@ -1,0 +1,99 @@
+.gridjs-record-table,
+.gridjs-summary-table {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.gridjs-record-table .gridjs-wrapper,
+.gridjs-summary-table .gridjs-wrapper {
+  overflow-x: auto;
+}
+
+.gridjs-record-table .gridjs-table,
+.gridjs-summary-table .gridjs-table {
+  min-width: 100%;
+  white-space: nowrap;
+}
+
+.gridjs-summary-table .gridjs-tbody tr:last-child td {
+  font-weight: 700;
+}
+
+.gridjs-record-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.gridjs-record-table .gridjs-tr:hover .gridjs-record-actions,
+.gridjs-record-table .gridjs-tr:focus-within .gridjs-record-actions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.gridjs-record-actions a {
+  display: inline-flex;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.gridjs-record-actions a:hover {
+  border: 0;
+}
+
+.gridjs-record-actions img {
+  width: 20px;
+  height: 20px;
+}
+
+.gridjs-wrapper {
+  border: 3px solid #000;
+}
+
+.gridjs-wrapper,
+.gridjs-wrapper td.gridjs-td,
+.gridjs-wrapper th.gridjs-th {
+  border-color: #000;
+  color: #000;
+  padding: 0px;
+}
+
+.gridjs-th-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gridjs-summary-table .gridjs-tbody td:nth-child(2),
+.gridjs-summary-table .gridjs-thead th:nth-child(2),
+.gridjs-summary-table .gridjs-tbody td:nth-child(3),
+.gridjs-summary-table .gridjs-thead th:nth-child(3) {
+  border-left: 3px solid #000;
+  border-right: 3px solid #000;
+}
+
+.gridjs-summary-table .gridjs-tbody tr:first-child td {
+  border-top: 3px solid #000;
+}
+
+.gridjs-summary-table .gridjs-tbody tr:last-child td {
+ border-top: 3px solid #000;
+ border-bottom: 2px solid #000;
+}
+
+.gridjs-record-table .gridjs-tbody td:nth-child(2),
+.gridjs-record-table .gridjs-thead th:nth-child(2),
+.gridjs-record-table .gridjs-tbody td:nth-child(3),
+.gridjs-record-table .gridjs-thead th:nth-child(3) {
+  border-left: 3px solid #000;
+  border-right: 3px solid #000;
+}
+
+.gridjs-record-table .gridjs-tbody tr:first-child td {
+  border-top: 3px solid #000;
+}
