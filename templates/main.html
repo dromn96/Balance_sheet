@@ -5,7 +5,37 @@
 <link rel="stylesheet" href="{% static 'css/filter-form.css' %}">
 <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <h2>Сводная таблица</h2>
-  <div class="filter">
+{% if messages %}
+{% for message in messages %}
+<div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-{{ message.tags|default:'info' }}{% endif %}" role="alert">{{ message }}</div>
+{% endfor %}
+{% endif %}
+  <section class="mb-4">
+  <form method="post" action="{% url 'import_transactions' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label for="csv-file">Импорт операций из CSV</label>
+    <input id="csv-file" type="file" name="csv_file" accept=".csv,text/csv" required>
+    <button type="submit" name="action" value="upload" class="btn btn-primary">Импорт данных</button>
+  </form>
+
+<!--Выбор CSV файла для импорта-->
+{% if pending_import %}
+<div class="alert alert-warning" role="alert">
+  <p>В файле найдено {{ pending_import.duplicate_count }} совпадений с уже существующими данными. Продолжить импорт новых операций?</p>
+  <form method="post" action="{% url 'import_transactions' %}" class="d-inline">
+    {% csrf_token %}
+    <input type="hidden" name="token" value="{{ pending_import.token }}">
+    <button type="submit" name="action" value="continue" class="btn btn-warning">Продолжить</button>
+  </form>
+  <form method="post" action="{% url 'import_transactions' %}" class="d-inline">
+    {% csrf_token %}
+    <input type="hidden" name="token" value="{{ pending_import.token }}">
+    <button type="submit" name="action" value="cancel" class="btn btn-secondary">Отмена</button>
+  </form>
+</div>
+{% endif %}
+  </section>
+ <div class="filter">
     <label>Фильтр по годам</label>
      <form>
     <select name="year">
@@ -14,7 +44,7 @@
         <option {% if year == selected_year %} selected {% endif %} value="{{ year }}">{{ year }}</option>
         {% endfor %}
     </select>
-    <button>Отфильтровать</button>
+    <button class="btn btn-primary">Отфильтровать</button>
     </form>
   </div>
     <h2>Расходы</h2>

@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="{% static 'css/base.css' %}">
 <div id="token">{% csrf_token %}</div>
 <h1>Категории расходов</h1>
-<button><a href="/expenses/category/add" class="nav-link px-2">Добавить категорию расхода</a></button>
+<button class="btn btn-primary"><a href="/expenses/category/add" class="nav-link px-2">Добавить категорию расхода</a></button>
 <!--<button><a href="/expenses/category/delete" class="nav-link px-2">Удалить категорию расходов</a></button>-->
 {% for category in expenses_category_list %}
     <ul class="nav col-12 col-md-auto mt-2 justify-content-left mb-md-0">

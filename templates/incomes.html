@@ -7,7 +7,7 @@
     <div id="token">{% csrf_token %}</div>
 <h1>Доходы</h1>
 <div class="filter">
-    <button><a href="/incomes/add" class="nav-link px-2">Добавить доход</a></button>
+    <button class="btn btn-primary"><a href="/incomes/add" class="nav-link px-2">Добавить доход</a></button>
     <label>Фильтр</label>
         <form>
         <select name="category">
@@ -30,9 +30,9 @@
             <option {% if year == selected_year %} selected {% endif %} value="{{ year }}">{{ year }}</option>
             {% endfor %}
         </select>
-        <button>Отфильтровать</button>
+        <button class="btn btn-primary">Отфильтровать</button>
         </form>
-    <button><a href="/incomes/export" class="nav-link px-2">Экспорт в Excel</a></button>
+    <button class="btn btn-primary"><a href="/incomes/export" class="nav-link px-2">Экспорт в Excel</a></button>
 </div>
 
 <table id='expensesTable' class="table table-bordered"
@@ -45,6 +45,7 @@
       <th scope="col">Описание дохода</th>
       <th scope="col">Категория</th>
       <th scope="col">Сумма дохода</th>
+      <th scope="col">Валюта дохода</th>
       <th scope="col">Месяц</th>
       <th scope="col">Год</th>
     </tr>
@@ -61,6 +62,7 @@
       <th scope="row">{{ income.income_name }}</th>
       <td><a href="/incomes/{{ income.id }}/edit">{{ income.category_name }}</a></td>
       <td data-order="{{ income.amount }}">{{ income.amount }} ₽</td>
+      <td>{{ income.income_currency_short_title }}</td>
       <td>{{ income.month_name }}</td>
       <td>{{ income.date_created|date:"Y" }}</td>
     </tr>

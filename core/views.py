@@ -1,19 +1,44 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from datetime import datetime
 from pprint import pprint
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Sum, Avg
 from django.contrib.auth import login as login_func, logout as logout_func, get_user_model, authenticate
 from collections import OrderedDict
-from django.shortcuts import redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.utils.crypto import constant_time_compare
 from .models import *
 from . forms import *
 from . filter import *
 from .services.expenses import get_expenses_by_category
 from .services.incomes import get_incomes_by_category
 from .services.excel import export_expenses, export_incomes
+from .services.zen_csv_import import (
+    import_records,
+    parse_zen_csv,
+    split_duplicate_records,
+)
+import secrets
+
+
+MAX_IMPORT_FILE_SIZE = 5 * 1024 * 1024
+
+# Обработка формы - из даты берется месяц и добавляется в БД
+def _assign_month_from_date(form):
+    month = Months.objects.filter(
+        month_number=form.cleaned_data['date_created'].month
+    ).first()
+    if month is None:
+        form.add_error(
+            'date_created',
+            'В справочнике месяцев нет месяца для выбранной даты.',
+        )
+        return False
+    form.instance.month_name = month
+    return True
+
 
 def main(request):
     current_year = datetime.now().year
@@ -22,7 +47,7 @@ def main(request):
     if current_year not in year_list:
         year_list.append(current_year)
     if request.user.is_authenticated:
-        profile = request.user.profile
+        profile = getattr(request.user, 'profile', None)
     else:
         profile = None
     expense_list = Expenses.objects.all().filter(profile=profile)
@@ -37,7 +62,7 @@ def main(request):
     if not request.user.is_authenticated:
         return redirect('users/login')
     
-    if not hasattr(request.user, 'profile'):
+    if profile is None:
         return HttpResponse('нет профиля у пользователя')
     
     profile = request.user.profile
@@ -78,7 +103,101 @@ def main(request):
     context.update({ 'total_incomes': total_incomes})
     context.update({'average_incomes': average_incomes})
     context.update({'monthly_incomes': monthly_incomes})
+    pending_import = request.session.get('pending_transaction_import')
+    if pending_import and pending_import.get('profile_id') == profile.pk:
+        context['pending_import'] = {
+            'token': pending_import['token'],
+            'duplicate_count': pending_import['duplicate_count'],
+        }
     return render(request, 'main.html', context)
+
+
+@login_required(login_url='login')
+def import_transactions(request):
+    if request.method != 'POST':
+        return HttpResponse(status=405)
+
+    profile = getattr(request.user, 'profile', None)
+    if profile is None:
+        messages.error(request, 'У пользователя не создан профиль.')
+        return redirect('/')
+
+    action = request.POST.get('action')
+    pending_import = request.session.get('pending_transaction_import')
+
+    if action in {'continue', 'cancel'}:
+        token = request.POST.get('token', '')
+        if (
+            not pending_import
+            or pending_import.get('profile_id') != profile.pk
+            or not constant_time_compare(pending_import.get('token', ''), token)
+        ):
+            messages.error(request, 'Подтверждение импорта устарело. Загрузите файл ещё раз.')
+            return redirect('/')
+
+        if action == 'cancel':
+            del request.session['pending_transaction_import']
+            messages.info(request, 'Импорт отменён.')
+            return redirect('/')
+
+        records = pending_import['records']
+        del request.session['pending_transaction_import']
+        try:
+            expense_count, income_count, duplicate_count = import_records(
+                profile, records
+            )
+        except ValueError as error:
+            messages.error(request, str(error))
+            return redirect('/')
+        messages.success(
+            request,
+            f'Импорт завершён: расходов — {expense_count}, '
+            f'доходов — {income_count}, пропущено совпадений — {duplicate_count}.',
+        )
+        return redirect('/')
+
+    if action != 'upload':
+        messages.error(request, 'Неизвестное действие импорта.')
+        return redirect('/')
+
+    request.session.pop('pending_transaction_import', None)
+    uploaded_file = request.FILES.get('csv_file')
+    if uploaded_file is None:
+        messages.error(request, 'Выберите CSV-файл для импорта.')
+        return redirect('/')
+    if uploaded_file.size > MAX_IMPORT_FILE_SIZE:
+        messages.error(request, 'Размер CSV-файла не должен превышать 5 МБ.')
+        return redirect('/')
+    if not uploaded_file.name.lower().endswith('.csv'):
+        messages.error(request, 'Для импорта выберите файл с расширением .csv.')
+        return redirect('/')
+
+    try:
+        records = parse_zen_csv(uploaded_file)
+        _, existing_duplicate_count, _ = split_duplicate_records(profile, records)
+        if existing_duplicate_count > 5:
+            pending_import = {
+                'token': secrets.token_urlsafe(24),
+                'profile_id': profile.pk,
+                'duplicate_count': existing_duplicate_count,
+                'records': records,
+            }
+            request.session['pending_transaction_import'] = pending_import
+            return redirect('/')
+
+        expense_count, income_count, duplicate_count = import_records(
+            profile, records
+        )
+    except ValueError as error:
+        messages.error(request, str(error))
+        return redirect('/')
+
+    messages.success(
+        request,
+        f'Импорт завершён: расходов — {expense_count}, доходов — {income_count}, '
+        f'пропущено совпадений — {duplicate_count}.',
+    )
+    return redirect('/')
 
 
 def incomes(request):
@@ -117,7 +236,7 @@ def add_incomes(request):
     form = IncomesForm()
     if request.method == 'POST':
         form = IncomesForm(request.POST)
-        if form.is_valid():
+        if form.is_valid() and _assign_month_from_date(form):
             income = form.save(commit=False)
             if request.user.is_authenticated:
                 income.profile = request.user.profile
@@ -163,7 +282,7 @@ def edit_income(request, income_id):
 
     if request.method == 'POST':
         form = IncomesForm(request.POST, instance=income)
-        if form.is_valid():
+        if form.is_valid() and _assign_month_from_date(form):
             form.save()
             return redirect('/incomes')
 
@@ -228,7 +347,7 @@ def add_expenses(request):
     form = ExpensesForm()
     if request.method == 'POST':
         form = ExpensesForm(request.POST)
-        if form.is_valid():
+        if form.is_valid() and _assign_month_from_date(form):
             exp = form.save(commit=False)
             if request.user.is_authenticated:
                 exp.profile = request.user.profile
@@ -264,7 +383,7 @@ def edit_expense(request, expense_id):
     if request.method == 'POST':
         form = ExpensesForm(request.POST, instance=expense)
 
-        if form.is_valid():
+        if form.is_valid() and _assign_month_from_date(form):
             form.save()
             return redirect('/expenses')
 

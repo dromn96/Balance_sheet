@@ -3,6 +3,7 @@ from .views import *
 
 urlpatterns = [
     path('', main),
+    path('import-data/', import_transactions, name='import_transactions'),
     path('incomes', incomes),
     path('incomes/add', add_incomes),
     path('incomes/category', incomes_category),
@@ -18,7 +19,6 @@ urlpatterns = [
     path('expenses/<int:expense_id>/edit', edit_expense),
     path('expenses/<int:expense_id>/delete', delete_expense),
     path('huge_expenses', huge_expenses),
-    # path('huge_expenses/add', add_huge_expenses),
 
     # path('expenses/category/delete', delete_expenses_category)
 ]

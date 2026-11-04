@@ -8,10 +8,9 @@ class ExpensesForm(forms.ModelForm):
     class Meta:
         model = Expenses
         fields = '__all__'
-        exclude = ('profile', )
+        exclude = ('profile', 'month_name')
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['month_name'].empty_label = 'Выберите месяц'
         self.fields['category_name'].empty_label = 'Без категории'
         self.fields['waste_name'].required = False
 
@@ -30,10 +29,9 @@ class IncomesForm(forms.ModelForm):
     class Meta:
         model = Income
         fields = '__all__'
-        exclude = ('profile', )
+        exclude = ('profile', 'month_name')
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['month_name'].empty_label = 'Выберите месяц'
         self.fields['category_name'].empty_label = 'Без категории'
         self.fields['income_name'].required = False
 
@@ -53,5 +51,4 @@ class IncomesCategoryForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['category_name'].empty_label = 'без категории'
-
 

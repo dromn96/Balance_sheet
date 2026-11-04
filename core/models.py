@@ -55,9 +55,12 @@ class CategoryIncome(models.Model):
 class Income(models.Model):
     month_name = models.ForeignKey(Months, verbose_name='Месяц', null=True, on_delete=models.SET_NULL)
     category_name = models.ForeignKey(CategoryIncome, verbose_name='Доход', null=True, on_delete=models.SET_NULL)
-    amount = models.IntegerField(null=True, verbose_name='Сумма дохода')
+    amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, verbose_name='Сумма дохода')
     date_created = models.DateField(verbose_name='Дата дохода')
-    income_name = models.TextField(verbose_name='Описание дохода')
+    income_name = models.TextField(blank=True, verbose_name='Описание дохода')
+    income_currency_short_title = models.CharField(max_length=3, blank=True, verbose_name='Валюта дохода')
+    income_account_name = models.CharField(max_length=255, blank=True, verbose_name='Счёт дохода')
+    payee = models.CharField(max_length=255, blank=True, verbose_name='Получатель')
     profile = models.ForeignKey(Profile, related_name='incomes', on_delete=models.SET_NULL, null=True, blank=True)
 
 
@@ -71,9 +74,12 @@ class Income(models.Model):
 class Expenses(models.Model):
     month_name = models.ForeignKey(Months, verbose_name='Месяц', null=True, on_delete=models.SET_NULL)
     category_name = models.ForeignKey(CategoryExpenses, verbose_name='Категории', null=True, on_delete=models.SET_NULL)
-    cash_expenses = models.IntegerField(verbose_name='Сумма расхода')
+    cash_expenses = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Сумма расхода')
     date_created = models.DateField(verbose_name='Дата расхода', null=True, blank=True)
-    waste_name = models.TextField(verbose_name='Описание расхода')
+    waste_name = models.TextField(blank=True, verbose_name='Описание расхода')
+    outcome_currency_short_title = models.CharField(max_length=3, blank=True, verbose_name='Валюта расхода')
+    outcome_account_name = models.CharField(max_length=255, blank=True, verbose_name='Счёт расхода')
+    payee = models.CharField(max_length=255, blank=True, verbose_name='Получатель')
     profile = models.ForeignKey(Profile, related_name='expenses', on_delete=models.SET_NULL, null=True, blank=True)
 
     class Meta:
@@ -120,5 +126,3 @@ class HugeExpensesSettings(models.Model):
 
 #     def __str__(self):
 #         return str(self.username)
-
-

@@ -8,8 +8,8 @@
 <form method="post">
     {% csrf_token %}
     {{ form|crispy }}
-    <button type="submit">Добавить</button>
-    <button><a href="/incomes/category">Отмена</a></button>
+    <button type="submit" class="btn btn-success">Добавить</button>
+    <a class="btn btn-secondary" href="/incomes/category">Отмена</a>
 </form>
 
  {% endblock %}

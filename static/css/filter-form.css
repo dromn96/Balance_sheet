@@ -24,8 +24,17 @@
 }
 .filter {
   display: flex;
-  align-items: center; /* вертикальное выравнивание по центру */
-  gap: 10px; /* расстояние между элементами по желанию */
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
   padding-top: 5px;
   padding-bottom: 15px;
+}
+
+.filter form {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
 }

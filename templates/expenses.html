@@ -7,7 +7,7 @@
     <div id="token">{% csrf_token %}</div>
 <h1>Расходы</h1>
 <div class="filter">
-    <button><a href="/expenses/add" class="nav-link px-2">Добавить расход</a></button>
+    <button class="btn btn-primary"><a href="/expenses/add" class="nav-link px-2">Добавить расход</a></button>
     <label>Фильтр</label>
         <form>
         <select name="category">
@@ -30,9 +30,9 @@
             <option {% if year == selected_year %} selected {% endif %} value="{{ year }}">{{ year }}</option>
             {% endfor %}
         </select>
-        <button>Отфильтровать</button>
+        <button class="btn btn-primary">Отфильтровать</button>
         </form>
-    <button><a href="/expenses/export" class="nav-link px-2">Экспорт в Excel</a></button>
+    <button class="btn btn-primary"><a href="/expenses/export" class="nav-link px-2">Экспорт в Excel</a></button>
 </div>
 
 <table id='expensesTable' class="table table-bordered"
