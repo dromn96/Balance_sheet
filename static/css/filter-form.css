@@ -38,3 +38,11 @@
   gap: 10px;
   margin: 0;
 }
+
+.planned-average {
+  cursor: pointer;
+}
+
+.planned-average:hover {
+  background-color: #f8f9fa;
+}

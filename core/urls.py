@@ -3,6 +3,7 @@ from .views import *
 
 urlpatterns = [
     path('', main),
+    path('save-category-plans/', save_category_plans, name='save_category_plans'),
     path('import-data/', import_transactions, name='import_transactions'),
     path('incomes', incomes),
     path('incomes/add', add_incomes),

@@ -3,12 +3,15 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from datetime import datetime
 from pprint import pprint
 from django.views.decorators.csrf import csrf_exempt
-from django.db.models import Sum, Avg
+from django.db.models import Sum
 from django.contrib.auth import login as login_func, logout as logout_func, get_user_model, authenticate
 from collections import OrderedDict
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.utils.crypto import constant_time_compare
+from django.core.exceptions import ValidationError
+from django.db import transaction
+import json
 from .models import *
 from . forms import *
 from . filter import *
@@ -75,11 +78,21 @@ def main(request):
     # Общая сумма доходов за год
     total_incomes = income_list.aggregate(total=Sum('amount'))['total'] or 0
 
-    # Среднее значение расходов за год
-    average_expenses = expense_list.aggregate(avg=Avg('cash_expenses'))['avg'] or 0
-
-    # Среднее значение доходов за год
-    average_incomes = income_list.aggregate(avg=Avg('amount'))['avg'] or 0
+    # Сумма значений «Среднее факт» по категориям
+    sum_average_expenses = sum(
+        (data['average'] for data in expenses_by_category.values()), 0
+    )
+    sum_average_incomes = sum(
+        (data['average'] for data in incomes_by_category.values()), 0
+    )
+    sum_planned_expenses = sum(
+        (data['planned_average'] or 0 for data in expenses_by_category.values()),
+        0,
+    )
+    sum_planned_incomes = sum(
+        (data['planned_average'] or 0 for data in incomes_by_category.values()),
+        0,
+    )
 
     # Сумма расходов по категориям для каждого месяца
     monthly_expenses = {}
@@ -98,10 +111,12 @@ def main(request):
     context.update({'expenses_by_category': expenses_by_category})
     context.update({'incomes_by_category': incomes_by_category})
     context.update({ 'total_expenses': total_expenses})
-    context.update({'average_expenses': average_expenses})
+    context.update({'sum_planned_expenses': sum_planned_expenses})
+    context.update({'sum_average_expenses': sum_average_expenses})
     context.update({'monthly_expenses': monthly_expenses})
     context.update({ 'total_incomes': total_incomes})
-    context.update({'average_incomes': average_incomes})
+    context.update({'sum_planned_incomes': sum_planned_incomes})
+    context.update({'sum_average_incomes': sum_average_incomes})
     context.update({'monthly_incomes': monthly_incomes})
     pending_import = request.session.get('pending_transaction_import')
     if pending_import and pending_import.get('profile_id') == profile.pk:
@@ -112,6 +127,80 @@ def main(request):
     return render(request, 'main.html', context)
 
 
+@login_required
+def save_category_plans(request):
+    if request.method != 'POST':
+        return HttpResponse(status=405)
+
+    try:
+        payload = json.loads(request.body)
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return JsonResponse({'error': 'Некорректный формат данных.'}, status=400)
+
+    if not isinstance(payload, dict):
+        return JsonResponse({'error': 'Некорректный формат данных.'}, status=400)
+
+    updates = []
+    for key, model in (
+        ('expenses', CategoryExpenses),
+        ('incomes', CategoryIncome),
+    ):
+        records = payload.get(key)
+        if not isinstance(records, list):
+            return JsonResponse({'error': 'Некорректный список категорий.'}, status=400)
+
+        parsed_records = []
+        seen_ids = set()
+        for record in records:
+            if not isinstance(record, dict):
+                return JsonResponse({'error': 'Некорректные данные категории.'}, status=400)
+            category_id = record.get('id')
+            value = record.get('value')
+            if (
+                isinstance(category_id, bool)
+                or not isinstance(category_id, int)
+                or category_id <= 0
+                or category_id in seen_ids
+                or isinstance(value, bool)
+            ):
+                return JsonResponse({'error': 'Некорректные данные категории.'}, status=400)
+            seen_ids.add(category_id)
+
+            try:
+                cleaned_value = (
+                    None if value is None or value == ''
+                    else model._meta.get_field('planned_average').clean(value, None)
+                )
+            except ValidationError:
+                return JsonResponse(
+                    {
+                        'error': (
+                            'Плановая сумма должна быть числом не более чем '
+                            'с двумя знаками после запятой.'
+                        )
+                    },
+                    status=400,
+                )
+
+            parsed_records.append((category_id, cleaned_value))
+
+        categories = model.objects.in_bulk(seen_ids)
+        if len(categories) != len(seen_ids):
+            return JsonResponse({'error': 'Одна или несколько категорий не найдены.'}, status=400)
+        updates.extend(
+            (categories[category_id], value)
+            for category_id, value in parsed_records
+        )
+
+    with transaction.atomic():
+        for category, value in updates:
+            category.planned_average = value
+            category.save(update_fields=['planned_average'])
+
+    return JsonResponse({'saved': len(updates)})
+
+
+# Импорт транзакций из CSV-файла, загруженного пользователем. Поддерживается подтверждение импорта при обнаружении дубликатов.
 @login_required(login_url='login')
 def import_transactions(request):
     if request.method != 'POST':

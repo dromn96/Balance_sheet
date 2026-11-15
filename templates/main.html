@@ -44,14 +44,18 @@
         <option {% if year == selected_year %} selected {% endif %} value="{{ year }}">{{ year }}</option>
         {% endfor %}
     </select>
-    <button class="btn btn-primary">Отфильтровать</button>
+    <button class="btn btn-primary">Применить</button>
+    <button id="save-category-plans" class="d-none"
+            title="Сохранить плановые суммы" aria-label="Сохранить плановые суммы">💾</button>
     </form>
   </div>
+  <div id="csrf-token" hidden>{% csrf_token %}</div>
     <h2>Расходы</h2>
 <table class="table table-bordered summary-table w-100">
   <thead>
     <tr>
       <th scope="col">Категория</th>
+      <th scope="col">Среднее план</th>
       <th scope="col">Среднее факт</th>
       <th scope="col">Итого</th>
         {% for month in month_list %}
@@ -63,6 +67,8 @@
     {% for category_name, data in expenses_by_category.items %}
     <tr>
       <td>{{ category_name }}</td>
+      <td class="planned-average" data-category-type="expenses" data-category-id="{{ data.category_id }}"
+          data-value="{{ data.planned_average|default_if_none:'' }}">{{ data.planned_average|default_if_none:'' }}{% if data.planned_average != None %} ₽{% endif %}</td>
       <td data-order="{{ data.average }}"><b>{{ data.average }} ₽</b></td>
       <td data-order="{{ data.total }}"><b>{{ data.total }} ₽</b></td>
 
@@ -86,7 +92,8 @@
   <tfoot>
     <tr>
       <td><b>Итого</b></td>
-        <td data-order="{{ average_expenses }}"><b>{{ average_expenses }} ₽</b></td>
+        <td data-order="{{ sum_planned_expenses }}"><b>{{ sum_planned_expenses }} ₽</b></td>
+        <td data-order="{{ sum_average_expenses }}"><b>{{ sum_average_expenses }} ₽</b></td>
         <td data-order="{{ total_expenses }}"><b>{{ total_expenses }} ₽</b></td>
           {% for month, total in monthly_expenses.items %}
         <td data-order="{{ total }}"><b>{{ total }} ₽</b></td>
@@ -101,6 +108,7 @@
     <tr>
       <th scope="col">Категория</th>
       <th scope="col">Среднее план</th>
+      <th scope="col">Среднее факт</th>
       <th scope="col">Итого</th>
         {% for month in month_list %}
       <th scope="col">{{ month.month_name }}</th>
@@ -111,6 +119,8 @@
     {% for category_name, data in incomes_by_category.items %}
     <tr>
       <td>{{ category_name }}</td>
+      <td class="planned-average" data-category-type="incomes" data-category-id="{{ data.category_id }}"
+          data-value="{{ data.planned_average|default_if_none:'' }}">{{ data.planned_average|default_if_none:'' }}{% if data.planned_average != None %} ₽{% endif %}</td>
       <td data-order="{{ data.average }}"><b>{{ data.average }} ₽</b></td>
       <td data-order="{{ data.total }}"><b>{{ data.total }} ₽</b></td>
 
@@ -134,7 +144,8 @@
     <tfoot>
       <tr>
       <td><b>Итого</b></td>
-        <td data-order="{{ average_incomes }}"><b>{{ average_incomes }} ₽</b></td>
+        <td data-order="{{ sum_planned_incomes }}"><b>{{ sum_planned_incomes }} ₽</b></td>
+        <td data-order="{{ sum_average_incomes }}"><b>{{ sum_average_incomes }} ₽</b></td>
         <td data-order="{{ total_incomes }}"><b>{{ total_incomes }} ₽</b></td>
           {% for month, total in monthly_incomes.items %}
         <td class="bold_cell" data-order="{{ total }}"><b>{{ total }} ₽</b></td>
@@ -142,4 +153,5 @@
   </tr>
     </tfoot>
 </table>
+<script src="{% static 'js/main.js' %}"></script>
     {% endblock %}

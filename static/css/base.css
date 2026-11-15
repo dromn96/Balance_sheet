@@ -4,15 +4,18 @@ color: black;
 }
 
 button {
-    padding: 0.375rem 0.75rem;
-    border-radius: 10px;
-    background-color: white;
-    border: 1px solid black;
-    font-size: 1rem
+  background: none;       /* Убирает серый фон */
+  border: none;           /* Убирает стандартную рамку */
+  padding: 0;             /* Убирает внутренние отступы (по желанию) */
+  font: inherit;          /* Наследует шрифт родителя (важно для текста) */
+  color: inherit;         /* Наследует цвет текста */
+  cursor: pointer;        /* Делает курсор в виде «руки» при наведении */
+}
 
-}
-button:hover {
-    cursor: pointer;
-    background-color: #0d6efd;
-    color: white;
-}
+
+/*}*/
+/*button:hover {*/
+/*    cursor: pointer;*/
+/*    background-color: #0d6efd;*/
+/*    color: white;*/
+/*}*/

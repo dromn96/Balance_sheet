@@ -91,12 +91,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.querySelectorAll('.summary-table').forEach((table) => {
     const headers = Array.from(table.querySelectorAll('thead th'));
+    const plannedAverageColumn = headers.findIndex(
+      (cell) => cell.textContent.trim() === 'Среднее план'
+    );
     const categoryColumnWidth = headers.length > 1 ? 15 : 100;
     const valueColumnWidth = headers.length > 1
       ? (100 - categoryColumnWidth) / (headers.length - 1)
       : 0;
     const columns = headers.map((cell, index) => {
       const name = cell.textContent.trim();
+      if (index === plannedAverageColumn) {
+        return {
+          name,
+          width: `${valueColumnWidth}%`,
+          formatter: (value) => formatMoney(
+            value && typeof value === 'object' ? value.value : value
+          ),
+        };
+      }
+
       return {
         name,
         width: `${index === 0 ? categoryColumnWidth : valueColumnWidth}%`,
@@ -104,13 +117,23 @@ document.addEventListener('DOMContentLoaded', () => {
       };
     });
     const data = Array.from(table.querySelectorAll('tbody tr, tfoot tr'), (row) =>
-      Array.from(row.cells, (cell) => cell.dataset.order || cell.textContent.trim())
+      Array.from(row.cells, (cell, index) => {
+        if (
+          index === plannedAverageColumn
+          && cell.classList.contains('planned-average')
+        ) {
+          return {
+            categoryType: cell.dataset.categoryType,
+            categoryId: cell.dataset.categoryId,
+            value: cell.dataset.value,
+          };
+        }
+        return cell.dataset.order || cell.textContent.trim();
+      })
     );
     const mount = document.createElement('div');
     mount.className = 'gridjs-summary-table';
-    table.before(mount);
-
-    new gridjs.Grid({
+    const grid = new gridjs.Grid({
       columns,
       data,
       search: false,
@@ -118,7 +141,40 @@ document.addEventListener('DOMContentLoaded', () => {
       pagination: false,
       language,
       style: tableCellStyles,
-    }).render(mount);
+    });
+
+    if (plannedAverageColumn !== -1) {
+      mount.classList.add('has-planned-average');
+      grid.config.eventEmitter.on('cellClick', (event, cell, column) => {
+        if (
+          column.name !== 'Среднее план'
+          || !cell.data
+          || !cell.data.categoryId
+        ) {
+          return;
+        }
+
+        const tableCell = event.currentTarget;
+        if (tableCell.querySelector('.planned-average-input')) {
+          return;
+        }
+
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.step = '0.01';
+        input.className = 'form-control planned-average-input';
+        input.dataset.categoryType = cell.data.categoryType;
+        input.dataset.categoryId = cell.data.categoryId;
+        input.dataset.originalValue = cell.data.value || '';
+        input.value = cell.data.value || '';
+        tableCell.textContent = '';
+        tableCell.append(input);
+        input.focus();
+      });
+    }
+
+    table.before(mount);
+    grid.render(mount);
     table.hidden = true;
   });
 });

@@ -43,6 +43,8 @@ def get_incomes_by_category(profile, year=2025):
                 'months': {}, 'total': 0, 'average': 0}
 
         data = data_by_category[category_name]
+        data['category_id'] = category.pk
+        data['planned_average'] = category.planned_average
         data['months'] = {
             str(month): data['months'].get(str(month), 0)
             for month in range(1, 13)
